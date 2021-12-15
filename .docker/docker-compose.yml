@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+    default:
+        external: true
+        name: ${COMPOSE_PROJECT_NAME}
+
+volumes:
+    redis:
+        name: redis
+        driver: ${VOLUMES_DRIVER}
+    letsencrypt:
+        name: letsencrypt
+        driver: ${VOLUMES_DRIVER}
+
+services:
+    redis:
+        image: redis:${REDIS_VERSION}-alpine
+        restart: always
+        container_name: ${COMPOSE_PROJECT_NAME}-redis
+        ports:
+            - "${REDIS_PORT_HOST}:6379"
+        volumes:
+            - redis:/data
+
+    proxy:
+        image: 'jc21/nginx-proxy-manager:latest'
+        restart: always
+        container_name: ${COMPOSE_PROJECT_NAME}-proxy
+        ports:
+            # Public HTTP Port:
+            - '80:80'
+            # Public HTTPS Port:
+            - '443:443'
+            # Admin Web Port:
+            - '${PROXY_ADMIN_PORT_HOST}:81'
+        environment:
+            DB_MYSQL_HOST: ${DB_HOST}
+            DB_MYSQL_PORT: ${DB_PORT}
+            DB_MYSQL_USER: ${DB_USERNAME}
+            DB_MYSQL_PASSWORD: ${DB_PASSWORD}
+            DB_MYSQL_NAME: ${DB_DATABASE}
+            # Uncomment this if IPv6 is not enabled on your host
+            DISABLE_IPV6: 'true'
+        volumes:
+            - ./data/nginx/custom:/data/nginx/custom
+            - letsencrypt:/etc/letsencrypt
