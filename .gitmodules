@@ -1,0 +1,3 @@
+[submodule "phpRedisAdmin"]
+	path = phpRedisAdmin
+	url = git@github.com:erikdubbelboer/phpRedisAdmin.git
