@@ -15,13 +15,27 @@ volumes:
 
 services:
     redis:
-        image: redis:${REDIS_VERSION}-alpine
+        image: redis:latest
         restart: always
         container_name: ${COMPOSE_PROJECT_NAME}-redis
+        command: --loglevel verbose
         ports:
             - "${REDIS_PORT_HOST}:6379"
         volumes:
             - redis:/data
+
+    redis-admin:
+        image: x1unix/php-micro:latest
+        restart: always
+        container_name: ${COMPOSE_PROJECT_NAME}-redis-admin
+        environment:
+            - HTTP_DIR=.
+            - REDIS_1_HOST=${COMPOSE_PROJECT_NAME}-redis
+            - REDIS_1_PORT=6379
+        ports:
+            - "${REDIS_ADMIN_PORT_HOST}:8080"
+        volumes:
+            - ../phpRedisAdmin:/var/www/html
 
     proxy:
         image: 'jc21/nginx-proxy-manager:latest'
@@ -43,5 +57,4 @@ services:
             # Uncomment this if IPv6 is not enabled on your host
             DISABLE_IPV6: 'true'
         volumes:
-            - ./data/nginx/custom:/data/nginx/custom
             - letsencrypt:/etc/letsencrypt
