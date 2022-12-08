@@ -31,7 +31,10 @@ services:
             - redis:/data
 
     redis-admin:
-        image: x1unix/php-micro:latest
+        image: onlinesolutions/php-micro
+        build:
+            context: .
+            dockerfile: ./php-micro/Dockerfile
         restart: always
         container_name: ${COMPOSE_PROJECT_NAME}-redis-admin
         environment:
