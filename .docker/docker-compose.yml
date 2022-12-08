@@ -12,6 +12,12 @@ volumes:
     letsencrypt:
         name: letsencrypt
         driver: ${VOLUMES_DRIVER}
+    cache:
+        name: cache
+        driver: ${VOLUMES_DRIVER}
+    logs:
+        name: logs
+        driver: ${VOLUMES_DRIVER}
 
 services:
     redis:
@@ -36,6 +42,8 @@ services:
             - "${REDIS_ADMIN_PORT_HOST}:8080"
         volumes:
             - ../phpRedisAdmin:/var/www/html
+            - cache:/var/www/cache
+            - logs:/var/logs/app
 
     proxy:
         image: 'jc21/nginx-proxy-manager:latest'
