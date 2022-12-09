@@ -9,6 +9,8 @@ ENV HTTP_ROOT /var/www/html
 ENV HTTP_DIR ""
 
 ADD php-micro/docker-entrypoint.sh /root
+RUN chown root:root /root/docker-entrypoint.sh
+RUN chmod 777 /root/docker-entrypoint.sh
 VOLUME ["$HTTP_ROOT", "/docker-entrypoint-init.d"]
 
 # Install PHP extensions

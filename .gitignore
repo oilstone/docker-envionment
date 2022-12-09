@@ -1,3 +1,5 @@
 /.idea
 /.docker/.env
 *.code-workspace
+.docker/data/logs
+.docker/data/nginx/*.pem

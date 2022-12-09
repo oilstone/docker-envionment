@@ -53,11 +53,8 @@ services:
         restart: always
         container_name: ${COMPOSE_PROJECT_NAME}-proxy
         ports:
-            # Public HTTP Port:
             - '80:80'
-            # Public HTTPS Port:
             - '443:443'
-            # Admin Web Port:
             - '${PROXY_ADMIN_PORT_HOST}:81'
         environment:
             DB_MYSQL_HOST: ${DB_HOST}
@@ -65,7 +62,7 @@ services:
             DB_MYSQL_USER: ${DB_USERNAME}
             DB_MYSQL_PASSWORD: ${DB_PASSWORD}
             DB_MYSQL_NAME: ${DB_DATABASE}
-            # Uncomment this if IPv6 is not enabled on your host
             DISABLE_IPV6: 'true'
         volumes:
+            - ./data:/data
             - letsencrypt:/etc/letsencrypt
