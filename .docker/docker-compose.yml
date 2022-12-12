@@ -63,6 +63,7 @@ services:
             DB_MYSQL_PASSWORD: ${DB_PASSWORD}
             DB_MYSQL_NAME: ${DB_DATABASE}
             DISABLE_IPV6: 'true'
+            X_FRAME_OPTIONS: "sameorigin"
         volumes:
             - ./data:/data
             - letsencrypt:/etc/letsencrypt
