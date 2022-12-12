@@ -9,9 +9,6 @@ volumes:
     redis:
         name: redis
         driver: ${VOLUMES_DRIVER}
-    letsencrypt:
-        name: letsencrypt
-        driver: ${VOLUMES_DRIVER}
     cache:
         name: cache
         driver: ${VOLUMES_DRIVER}
@@ -66,4 +63,4 @@ services:
             X_FRAME_OPTIONS: "sameorigin"
         volumes:
             - ./data:/data
-            - letsencrypt:/etc/letsencrypt
+            - ./letsencrypt:/etc/letsencrypt
