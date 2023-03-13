@@ -1,5 +1,5 @@
-/.idea
-/.docker/.env
+.env
 *.code-workspace
-.docker/data/logs
-.docker/data/nginx/*.pem
+data/*
+letsencrypt/*
+phpRedisAdmin/*

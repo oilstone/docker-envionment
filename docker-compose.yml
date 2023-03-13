@@ -8,15 +8,27 @@ networks:
 volumes:
     redis:
         name: redis
-        driver: ${VOLUMES_DRIVER}
+        external: true
     cache:
         name: cache
-        driver: ${VOLUMES_DRIVER}
+        external: true
     logs:
         name: logs
-        driver: ${VOLUMES_DRIVER}
+        external: true
 
 services:
+    db:
+        image: 'jc21/mariadb-aria:latest'
+        restart: always
+        container_name: ${COMPOSE_PROJECT_NAME}-db
+        environment:
+            MYSQL_ROOT_PASSWORD: 'npm'
+            MYSQL_DATABASE: 'npm'
+            MYSQL_USER: 'npm'
+            MYSQL_PASSWORD: 'npm'
+        volumes:
+            - ./data/mysql:/var/lib/mysql
+
     redis:
         image: redis:latest
         restart: always
@@ -41,26 +53,27 @@ services:
         ports:
             - "${REDIS_ADMIN_PORT_HOST}:8080"
         volumes:
-            - ../phpRedisAdmin:/var/www/html
+            - ./phpRedisAdmin:/var/www/html
             - cache:/var/www/cache
             - logs:/var/logs/app
 
     proxy:
         image: 'jc21/nginx-proxy-manager:latest'
         restart: always
-        container_name: ${COMPOSE_PROJECT_NAME}-proxy
         ports:
-            - '80:80'
-            - '443:443'
-            - '${PROXY_ADMIN_PORT_HOST}:81'
+            - '80:80' # Public HTTP Port
+            - '443:443' # Public HTTPS Port
+            - '81:81' # Admin Web Port
         environment:
-            DB_MYSQL_HOST: ${DB_HOST}
-            DB_MYSQL_PORT: ${DB_PORT}
-            DB_MYSQL_USER: ${DB_USERNAME}
-            DB_MYSQL_PASSWORD: ${DB_PASSWORD}
-            DB_MYSQL_NAME: ${DB_DATABASE}
+            DB_MYSQL_HOST: "db"
+            DB_MYSQL_PORT: 3306
+            DB_MYSQL_USER: "npm"
+            DB_MYSQL_PASSWORD: "npm"
+            DB_MYSQL_NAME: "npm"
             DISABLE_IPV6: 'true'
             X_FRAME_OPTIONS: "sameorigin"
         volumes:
             - ./data:/data
             - ./letsencrypt:/etc/letsencrypt
+        depends_on:
+            - db
