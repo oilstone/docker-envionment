@@ -3,7 +3,7 @@ version: '3.8'
 networks:
     default:
         external: true
-        name: ${COMPOSE_PROJECT_NAME}
+        name: environment
 
 volumes:
     redis:
@@ -18,9 +18,9 @@ volumes:
 
 services:
     db:
-        image: 'jc21/mariadb-aria:latest'
+        image: 'yobasystems/alpine-mariadb:latest'
         restart: always
-        container_name: ${COMPOSE_PROJECT_NAME}-db
+        container_name: environment-db
         environment:
             MYSQL_ROOT_PASSWORD: 'npm'
             MYSQL_DATABASE: 'npm'
@@ -32,7 +32,7 @@ services:
     redis:
         image: redis:latest
         restart: always
-        container_name: ${COMPOSE_PROJECT_NAME}-redis
+        container_name: environment-redis
         command: --loglevel verbose
         ports:
             - "${REDIS_PORT_HOST}:6379"
@@ -45,10 +45,10 @@ services:
             context: .
             dockerfile: ./php-micro/Dockerfile
         restart: always
-        container_name: ${COMPOSE_PROJECT_NAME}-redis-admin
+        container_name: environment-redis-admin
         environment:
             - HTTP_DIR=.
-            - REDIS_1_HOST=${COMPOSE_PROJECT_NAME}-redis
+            - REDIS_1_HOST=environment-redis
             - REDIS_1_PORT=6379
         ports:
             - "${REDIS_ADMIN_PORT_HOST}:8080"
@@ -73,7 +73,11 @@ services:
             DISABLE_IPV6: 'true'
             X_FRAME_OPTIONS: "sameorigin"
         volumes:
-            - ./data:/data
-            - ./letsencrypt:/etc/letsencrypt
+            - ./config.json:/app/config/production.json
+            - ./data/app:/data
+            - ./data/letsencrypt:/etc/letsencrypt
         depends_on:
             - db
+        networks:
+            default:
+                ipv4_address: ${PROXY_ADMIN_STATIC_IP}
