@@ -77,3 +77,6 @@ services:
             - ./letsencrypt:/etc/letsencrypt
         depends_on:
             - db
+        networks:
+            default:
+                ipv4_address: ${PROXY_ADMIN_STATIC_IP}
